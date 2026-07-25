@@ -243,6 +243,7 @@ export function App() {
         onClose={() => setAiModalOpen(false)}
         initialPrompt={aiModalPrompt}
         initialMode={aiModalMode}
+        currentContext={selectedVolume}
       />
 
     </div>
