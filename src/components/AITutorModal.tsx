@@ -84,7 +84,7 @@ Use the following JSON representing the handbook volume they are currently readi
 ${contextString}`;
 
       const session = ai.chats.create({
-        model: 'gemini-2.5-flash',
+        model: 'gemini-1.5-flash',
         config: {
           systemInstruction,
           temperature: 0.2,
@@ -199,7 +199,7 @@ ${contextString}`;
               <div className="flex items-center gap-2">
                 <h3 className="font-bold text-white text-base">AI Staff Engineer Assistant</h3>
                 <span className="text-[10px] uppercase font-bold text-amber-300 bg-amber-500/20 px-2 py-0.5 rounded border border-amber-500/30">
-                  Gemini 2.5 Flash
+                  Gemini 1.5 Flash
                 </span>
               </div>
               <p className="text-xs text-slate-400">Context: {currentContext?.title || 'General Knowledge'}</p>
