@@ -19,14 +19,6 @@ interface AITutorModalProps {
   currentContext?: any;
 }
 
-const AVAILABLE_MODELS = [
-  { id: 'gemini-2.5-flash', name: 'Gemini 2.5 Flash' },
-  { id: 'gemini-2.0-flash', name: 'Gemini 2.0 Flash' },
-  { id: 'gemini-1.5-flash', name: 'Gemini 1.5 Flash' },
-  { id: 'gemini-1.5-pro', name: 'Gemini 1.5 Pro' },
-  { id: 'gemini-pro', name: 'Gemini Pro (Legacy)' }
-];
-
 export const AITutorModal: React.FC<AITutorModalProps> = ({
   isOpen,
   onClose,
@@ -37,10 +29,12 @@ export const AITutorModal: React.FC<AITutorModalProps> = ({
   const [prompt, setPrompt] = useState<string>(initialPrompt);
   const [apiKey, setApiKey] = useState<string>('');
   const [hasApiKey, setHasApiKey] = useState<boolean>(false);
-  const [selectedModel, setSelectedModel] = useState<string>('gemini-2.0-flash');
+  const [availableModels, setAvailableModels] = useState<{id: string, name: string}[]>([]);
+  const [selectedModel, setSelectedModel] = useState<string>('');
   
   const [messages, setMessages] = useState<{ role: 'user' | 'model'; text: string }[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [fetchingModels, setFetchingModels] = useState<boolean>(false);
   const chatSessionRef = useRef<any>(null);
 
   useEffect(() => {
@@ -50,23 +44,66 @@ export const AITutorModal: React.FC<AITutorModalProps> = ({
   }, [initialPrompt, isOpen, hasApiKey]);
 
   useEffect(() => {
-    // Check for API key in local storage on mount
     const savedKey = localStorage.getItem('gemini_api_key');
     if (savedKey) {
       setApiKey(savedKey);
       setHasApiKey(true);
-    }
-    const savedModel = localStorage.getItem('gemini_selected_model');
-    if (savedModel) {
-      setSelectedModel(savedModel);
+      fetchAvailableModels(savedKey);
     }
   }, []);
 
-  const handleSaveApiKey = (e: React.FormEvent) => {
+  const fetchAvailableModels = async (key: string) => {
+    setFetchingModels(true);
+    try {
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${key}`);
+      const data = await response.json();
+      
+      if (data.models) {
+        // Filter for text generation models
+        const textModels = data.models
+          .filter((m: any) => 
+            m.supportedGenerationMethods?.includes('generateContent') && 
+            !m.name.includes('embedding') &&
+            !m.name.includes('tts') &&
+            !m.name.includes('image')
+          )
+          .map((m: any) => ({
+            id: m.name.replace('models/', ''),
+            name: m.displayName || m.name.replace('models/', '')
+          }));
+        
+        setAvailableModels(textModels);
+        
+        // Try to recover previously selected model or default to the most modern flash model
+        const savedModel = localStorage.getItem('gemini_selected_model');
+        if (savedModel && textModels.find((m: any) => m.id === savedModel)) {
+          setSelectedModel(savedModel);
+        } else if (textModels.length > 0) {
+          // Prefer flash models, particularly latest ones
+          const preferred = textModels.find((m: any) => m.id.includes('flash-latest')) 
+                         || textModels.find((m: any) => m.id.includes('3.6-flash'))
+                         || textModels.find((m: any) => m.id.includes('flash'))
+                         || textModels[0];
+          setSelectedModel(preferred.id);
+          localStorage.setItem('gemini_selected_model', preferred.id);
+        }
+      }
+    } catch (error) {
+      console.error("Failed to fetch models", error);
+      // Fallback
+      setAvailableModels([{id: 'gemini-flash-latest', name: 'Gemini Flash Latest'}]);
+      setSelectedModel('gemini-flash-latest');
+    } finally {
+      setFetchingModels(false);
+    }
+  };
+
+  const handleSaveApiKey = async (e: React.FormEvent) => {
     e.preventDefault();
     if (apiKey.trim()) {
       localStorage.setItem('gemini_api_key', apiKey.trim());
       setHasApiKey(true);
+      await fetchAvailableModels(apiKey.trim());
     }
   };
 
@@ -74,15 +111,16 @@ export const AITutorModal: React.FC<AITutorModalProps> = ({
     const newModel = e.target.value;
     setSelectedModel(newModel);
     localStorage.setItem('gemini_selected_model', newModel);
-    // Reset chat session so it uses the new model on next message
-    chatSessionRef.current = null;
+    chatSessionRef.current = null; // reset session
   };
 
   const handleClearApiKey = () => {
     localStorage.removeItem('gemini_api_key');
+    localStorage.removeItem('gemini_selected_model');
     setApiKey('');
     setHasApiKey(false);
     setMessages([]);
+    setAvailableModels([]);
     chatSessionRef.current = null;
   };
 
@@ -90,10 +128,8 @@ export const AITutorModal: React.FC<AITutorModalProps> = ({
     try {
       const ai = new GoogleGenAI({ apiKey: apiKey.trim() });
       
-      // Build context from the current active volume to inject into the system prompt
       let contextString = "No specific handbook context provided.";
       if (currentContext) {
-        // Strip out some heavy nested arrays to save tokens, but keep the core meat.
         const safeContext = JSON.parse(JSON.stringify(currentContext));
         contextString = JSON.stringify(safeContext, null, 2);
       }
@@ -106,7 +142,7 @@ Use the following JSON representing the handbook volume they are currently readi
 ${contextString}`;
 
       const session = ai.chats.create({
-        model: selectedModel,
+        model: selectedModel || 'gemini-flash-latest',
         config: {
           systemInstruction,
           temperature: 0.2,
@@ -122,7 +158,6 @@ ${contextString}`;
 
   if (!isOpen) return null;
 
-  // Render API Key Prompt screen if no key
   if (!hasApiKey) {
     return (
       <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
@@ -156,9 +191,10 @@ ${contextString}`;
             </div>
             <button
               type="submit"
-              className="w-full py-3 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold rounded-xl transition flex items-center justify-center gap-2"
+              disabled={fetchingModels}
+              className="w-full py-3 bg-amber-500 hover:bg-amber-600 disabled:opacity-50 text-slate-950 font-bold rounded-xl transition flex items-center justify-center gap-2"
             >
-              <span>Save Key to LocalStorage</span>
+              {fetchingModels ? <Loader2 className="w-5 h-5 animate-spin" /> : <span>Save Key & Fetch Models</span>}
             </button>
           </form>
           <div className="mt-4 text-center">
@@ -170,7 +206,7 @@ ${contextString}`;
   }
 
   const handleSendQuery = async () => {
-    if (!prompt.trim() || loading) return;
+    if (!prompt.trim() || loading || !selectedModel) return;
 
     const userMsg = prompt;
     setMessages(prev => [...prev, { role: 'user', text: userMsg }]);
@@ -199,10 +235,9 @@ ${contextString}`;
         ...prev,
         {
           role: 'model',
-          text: `[Error calling Gemini API]: ${err?.message || 'Check your API key or network connection.'}\n\nTip: If you see a 404 NOT_FOUND error, try selecting a different model from the top-right dropdown menu.`
+          text: `[Error calling Gemini API (${selectedModel})]: ${err?.message || 'Unknown Error'}\n\nTip: You might have hit a quota limit (429) for this specific model. Please select a different model from the dropdown menu (e.g. gemini-flash-latest or gemini-3.6-flash).`
         }
       ]);
-      // Clear session on error so they can try again or change models
       chatSessionRef.current = null;
     } finally {
       setLoading(false);
@@ -230,15 +265,19 @@ ${contextString}`;
           <div className="flex items-center gap-2 flex-wrap">
             <div className="flex items-center gap-2 bg-slate-900 border border-slate-800 px-2 py-1 rounded-lg">
               <Settings2 className="w-3.5 h-3.5 text-slate-400" />
-              <select 
-                value={selectedModel}
-                onChange={handleModelChange}
-                className="bg-transparent text-xs text-amber-300 font-bold focus:outline-none cursor-pointer"
-              >
-                {AVAILABLE_MODELS.map(m => (
-                  <option key={m.id} value={m.id} className="bg-slate-900 text-white">{m.name}</option>
-                ))}
-              </select>
+              {fetchingModels ? (
+                 <Loader2 className="w-3.5 h-3.5 text-amber-500 animate-spin" />
+              ) : (
+                <select 
+                  value={selectedModel}
+                  onChange={handleModelChange}
+                  className="bg-transparent text-xs text-amber-300 font-bold focus:outline-none cursor-pointer max-w-[150px] truncate"
+                >
+                  {availableModels.map(m => (
+                    <option key={m.id} value={m.id} className="bg-slate-900 text-white">{m.name}</option>
+                  ))}
+                </select>
+              )}
             </div>
 
             <button
@@ -320,7 +359,7 @@ ${contextString}`;
           />
           <button
             onClick={handleSendQuery}
-            disabled={loading || !prompt.trim()}
+            disabled={loading || !prompt.trim() || !selectedModel}
             className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white font-bold text-sm rounded-xl shadow flex items-center gap-1.5 transition"
           >
             <Send className="w-4 h-4" />
