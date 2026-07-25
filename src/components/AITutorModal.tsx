@@ -6,7 +6,8 @@ import {
   Sparkles, 
   Key,
   Loader2,
-  Trash2
+  Trash2,
+  Settings2
 } from 'lucide-react';
 import { GoogleGenAI } from '@google/genai';
 
@@ -18,6 +19,14 @@ interface AITutorModalProps {
   currentContext?: any;
 }
 
+const AVAILABLE_MODELS = [
+  { id: 'gemini-2.5-flash', name: 'Gemini 2.5 Flash' },
+  { id: 'gemini-2.0-flash', name: 'Gemini 2.0 Flash' },
+  { id: 'gemini-1.5-flash', name: 'Gemini 1.5 Flash' },
+  { id: 'gemini-1.5-pro', name: 'Gemini 1.5 Pro' },
+  { id: 'gemini-pro', name: 'Gemini Pro (Legacy)' }
+];
+
 export const AITutorModal: React.FC<AITutorModalProps> = ({
   isOpen,
   onClose,
@@ -28,6 +37,7 @@ export const AITutorModal: React.FC<AITutorModalProps> = ({
   const [prompt, setPrompt] = useState<string>(initialPrompt);
   const [apiKey, setApiKey] = useState<string>('');
   const [hasApiKey, setHasApiKey] = useState<boolean>(false);
+  const [selectedModel, setSelectedModel] = useState<string>('gemini-2.0-flash');
   
   const [messages, setMessages] = useState<{ role: 'user' | 'model'; text: string }[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -46,6 +56,10 @@ export const AITutorModal: React.FC<AITutorModalProps> = ({
       setApiKey(savedKey);
       setHasApiKey(true);
     }
+    const savedModel = localStorage.getItem('gemini_selected_model');
+    if (savedModel) {
+      setSelectedModel(savedModel);
+    }
   }, []);
 
   const handleSaveApiKey = (e: React.FormEvent) => {
@@ -54,6 +68,14 @@ export const AITutorModal: React.FC<AITutorModalProps> = ({
       localStorage.setItem('gemini_api_key', apiKey.trim());
       setHasApiKey(true);
     }
+  };
+
+  const handleModelChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newModel = e.target.value;
+    setSelectedModel(newModel);
+    localStorage.setItem('gemini_selected_model', newModel);
+    // Reset chat session so it uses the new model on next message
+    chatSessionRef.current = null;
   };
 
   const handleClearApiKey = () => {
@@ -84,7 +106,7 @@ Use the following JSON representing the handbook volume they are currently readi
 ${contextString}`;
 
       const session = ai.chats.create({
-        model: 'gemini-1.5-flash',
+        model: selectedModel,
         config: {
           systemInstruction,
           temperature: 0.2,
@@ -177,9 +199,11 @@ ${contextString}`;
         ...prev,
         {
           role: 'model',
-          text: `[Error calling Gemini API]: ${err?.message || 'Check your API key or network connection.'}`
+          text: `[Error calling Gemini API]: ${err?.message || 'Check your API key or network connection.'}\n\nTip: If you see a 404 NOT_FOUND error, try selecting a different model from the top-right dropdown menu.`
         }
       ]);
+      // Clear session on error so they can try again or change models
+      chatSessionRef.current = null;
     } finally {
       setLoading(false);
     }
@@ -190,7 +214,7 @@ ${contextString}`;
       <div className="bg-slate-900 border border-slate-800 w-full max-w-4xl h-[85vh] rounded-2xl flex flex-col shadow-2xl overflow-hidden relative">
         
         {/* Header */}
-        <div className="p-4 bg-slate-950 border-b border-slate-800 flex items-center justify-between">
+        <div className="p-4 bg-slate-950 border-b border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-xl bg-gradient-to-tr from-indigo-600 to-purple-600 text-white">
               <Bot className="w-5 h-5" />
@@ -198,22 +222,32 @@ ${contextString}`;
             <div>
               <div className="flex items-center gap-2">
                 <h3 className="font-bold text-white text-base">AI Staff Engineer Assistant</h3>
-                <span className="text-[10px] uppercase font-bold text-amber-300 bg-amber-500/20 px-2 py-0.5 rounded border border-amber-500/30">
-                  Gemini 1.5 Flash
-                </span>
               </div>
               <p className="text-xs text-slate-400">Context: {currentContext?.title || 'General Knowledge'}</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
+            <div className="flex items-center gap-2 bg-slate-900 border border-slate-800 px-2 py-1 rounded-lg">
+              <Settings2 className="w-3.5 h-3.5 text-slate-400" />
+              <select 
+                value={selectedModel}
+                onChange={handleModelChange}
+                className="bg-transparent text-xs text-amber-300 font-bold focus:outline-none cursor-pointer"
+              >
+                {AVAILABLE_MODELS.map(m => (
+                  <option key={m.id} value={m.id} className="bg-slate-900 text-white">{m.name}</option>
+                ))}
+              </select>
+            </div>
+
             <button
               onClick={handleClearApiKey}
               className="text-xs text-red-400 hover:text-red-300 px-3 py-1.5 border border-red-900/50 rounded-lg hover:bg-red-900/20 transition flex items-center gap-1.5"
               title="Remove API Key"
             >
               <Trash2 className="w-3.5 h-3.5" />
-              <span>Clear Key</span>
+              <span className="hidden sm:inline">Clear Key</span>
             </button>
             <button
               onClick={onClose}
@@ -269,7 +303,7 @@ ${contextString}`;
           {loading && (
             <div className="flex items-center gap-2 text-indigo-400 text-xs font-mono bg-slate-950 p-3 rounded-xl w-fit">
               <Loader2 className="w-4 h-4 animate-spin text-purple-400" />
-              <span>Staff AI Engineer is reading the context...</span>
+              <span>Staff AI Engineer is reasoning...</span>
             </div>
           )}
         </div>
