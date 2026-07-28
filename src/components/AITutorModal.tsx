@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Bot, 
   X, 
@@ -9,7 +9,6 @@ import {
   Trash2,
   Settings2
 } from 'lucide-react';
-import { GoogleGenAI } from '@google/genai';
 
 interface AITutorModalProps {
   isOpen: boolean;
@@ -35,7 +34,6 @@ export const AITutorModal: React.FC<AITutorModalProps> = ({
   const [messages, setMessages] = useState<{ role: 'user' | 'model'; text: string }[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [fetchingModels, setFetchingModels] = useState<boolean>(false);
-  const chatSessionRef = useRef<any>(null);
 
   useEffect(() => {
     if (initialPrompt && isOpen && hasApiKey) {
@@ -111,7 +109,7 @@ export const AITutorModal: React.FC<AITutorModalProps> = ({
     const newModel = e.target.value;
     setSelectedModel(newModel);
     localStorage.setItem('gemini_selected_model', newModel);
-    chatSessionRef.current = null; // reset session
+    setMessages([]); // Reset conversation when changing models to avoid context issues
   };
 
   const handleClearApiKey = () => {
@@ -121,39 +119,6 @@ export const AITutorModal: React.FC<AITutorModalProps> = ({
     setHasApiKey(false);
     setMessages([]);
     setAvailableModels([]);
-    chatSessionRef.current = null;
-  };
-
-  const initChatSession = () => {
-    try {
-      const ai = new GoogleGenAI({ apiKey: apiKey.trim() });
-      
-      let contextString = "No specific handbook context provided.";
-      if (currentContext) {
-        const safeContext = JSON.parse(JSON.stringify(currentContext));
-        contextString = JSON.stringify(safeContext, null, 2);
-      }
-
-      const systemInstruction = `You are an elite Staff Backend Engineer and author of the Backend Engineering Handbook. 
-You are acting as an AI tutor for a student reading this handbook. 
-Answer their questions precisely, at a Staff Engineer level. Do not hallucinate. 
-Use the following JSON representing the handbook volume they are currently reading to provide perfectly grounded answers:
-
-${contextString}`;
-
-      const session = ai.chats.create({
-        model: selectedModel || 'gemini-flash-latest',
-        config: {
-          systemInstruction,
-          temperature: 0.2,
-        }
-      });
-      chatSessionRef.current = session;
-      return session;
-    } catch (error) {
-      console.error("Failed to initialize GenAI:", error);
-      return null;
-    }
   };
 
   if (!isOpen) return null;
@@ -174,8 +139,8 @@ ${contextString}`;
           </div>
           
           <p className="text-sm text-slate-400 mb-6">
-            To use the Staff AI Engineer feature locally without a backend server, please provide your Gemini API key. 
-            This key is stored <strong className="text-amber-400">only in your browser's local storage</strong> and is sent directly to Google.
+            To use the Staff AI Engineer feature, please provide your Gemini API key. 
+            This key is stored <strong className="text-amber-400">only in your browser's local storage</strong> and sent securely to our Vercel Serverless API.
           </p>
           
           <form onSubmit={handleSaveApiKey} className="space-y-4">
@@ -214,19 +179,38 @@ ${contextString}`;
     setLoading(true);
 
     try {
-      let session = chatSessionRef.current;
-      if (!session) {
-        session = initChatSession();
+      let contextString = "No specific handbook context provided.";
+      if (currentContext) {
+        const safeContext = JSON.parse(JSON.stringify(currentContext));
+        contextString = JSON.stringify(safeContext, null, 2);
       }
-      if (!session) throw new Error("Failed to initialize chat session.");
 
-      const response = await session.sendMessage({ message: userMsg });
+      const res = await fetch('/api/query', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey.trim()}`
+        },
+        body: JSON.stringify({
+          prompt: userMsg,
+          mode: selectedModel.includes('pro') ? 'high_thinking' : 'explain',
+          context: contextString,
+          history: messages
+        })
+      });
+
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error || errData.details || `HTTP ${res.status}`);
+      }
+
+      const data = await res.json();
       
       setMessages(prev => [
         ...prev,
         {
           role: 'model',
-          text: response.text || 'No response generated.'
+          text: data.answer || 'No response generated.'
         }
       ]);
       
@@ -235,10 +219,9 @@ ${contextString}`;
         ...prev,
         {
           role: 'model',
-          text: `[Error calling Gemini API (${selectedModel})]: ${err?.message || 'Unknown Error'}\n\nTip: You might have hit a quota limit (429) for this specific model. Please select a different model from the dropdown menu (e.g. gemini-flash-latest or gemini-3.6-flash).`
+          text: `[Error calling Serverless API]: ${err?.message || 'Unknown Error'}\n\nTip: You might have hit a quota limit or the API is misconfigured.`
         }
       ]);
-      chatSessionRef.current = null;
     } finally {
       setLoading(false);
     }

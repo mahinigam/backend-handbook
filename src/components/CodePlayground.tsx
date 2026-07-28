@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Terminal, Play, RotateCcw, Copy, Check, Sparkles, AlertCircle } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Terminal, Play, RotateCcw, Copy, Check, Sparkles, AlertCircle, Loader2 } from 'lucide-react';
 
 interface CodePlaygroundProps {
   initialCode?: string;
@@ -59,22 +59,61 @@ export const CodePlayground: React.FC<CodePlaygroundProps> = ({
   const [output, setOutput] = useState<string>('');
   const [isRunning, setIsRunning] = useState<boolean>(false);
   const [copied, setCopied] = useState<boolean>(false);
+  
+  const [pyodide, setPyodide] = useState<any>(null);
+  const [isPyodideLoading, setIsPyodideLoading] = useState(false);
 
-  const handleRunCode = () => {
+  useEffect(() => {
+    // Only load for Python
+    if (initialLanguage.toLowerCase() !== 'python') return;
+    
+    if (!(window as any).loadPyodide && !isPyodideLoading) {
+      setIsPyodideLoading(true);
+      const script = document.createElement('script');
+      script.src = 'https://cdn.jsdelivr.net/pyodide/v0.25.0/full/pyodide.js';
+      script.onload = async () => {
+        try {
+          const py = await (window as any).loadPyodide({
+            indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.25.0/full/',
+          });
+          setPyodide(py);
+        } catch (e) {
+          console.error('Failed to load Pyodide', e);
+        } finally {
+          setIsPyodideLoading(false);
+        }
+      };
+      document.body.appendChild(script);
+    }
+  }, [initialLanguage, isPyodideLoading]);
+
+  const handleRunCode = async () => {
     setIsRunning(true);
-    setOutput('Preparing deterministic learning preview...\n');
+    setOutput('');
 
-    setTimeout(() => {
-      // This browser-only preview is intentionally deterministic; it is not a Python runtime.
-      if (code.includes('UserProfile')) {
-        setOutput(`User Created Successfully: staff_dev\nTesting Validation Failure Case...\nValidation Error Caught: Value must be at least 3 chars, got 2\n\n--- Preview Completed ---`);
-      } else if (code.includes('SlidingWindowRateLimiter') || code.includes('rate_limit')) {
-        setOutput(`Request 1: Allowed=True, Remaining Tokens=2\nRequest 2: Allowed=True, Remaining Tokens=1\nRequest 3: Allowed=True, Remaining Tokens=0\nRequest 4: Allowed=False, Remaining Tokens=0\nRequest 5: Allowed=False, Remaining Tokens=0\n\n--- Preview Completed ---`);
-      } else {
-        setOutput(`[Learning Sandbox Preview]\nThis browser-only tool does not execute arbitrary Python. Use Copy Code to run the snippet locally, or ask the AI tutor for a code review.\n\n--- Preview Completed ---`);
-      }
+    if (initialLanguage.toLowerCase() !== 'python') {
+      setOutput('[Learning Sandbox]\nCurrently, only Python is supported for in-browser execution.\n');
       setIsRunning(false);
-    }, 600);
+      return;
+    }
+
+    if (!pyodide) {
+      setOutput('Pyodide is still loading... Please wait.');
+      setIsRunning(false);
+      return;
+    }
+
+    try {
+      // Capture stdout and stderr
+      pyodide.setStdout({ batched: (msg: string) => setOutput(prev => prev + msg + '\\n') });
+      pyodide.setStderr({ batched: (msg: string) => setOutput(prev => prev + msg + '\\n') });
+      
+      await pyodide.runPythonAsync(code);
+    } catch (e: any) {
+      setOutput(prev => prev + '\\nError:\\n' + e.message);
+    } finally {
+      setIsRunning(false);
+    }
   };
 
   const handleCopy = () => {
@@ -88,7 +127,10 @@ export const CodePlayground: React.FC<CodePlaygroundProps> = ({
       <div className="flex items-center justify-between bg-slate-900 border border-slate-800 p-4 rounded-xl">
         <div className="flex items-center gap-2">
           <Terminal className="w-5 h-5 text-amber-400" />
-          <h2 className="text-base font-bold text-white">Interactive Code Sandbox & Output Preview</h2>
+          <h2 className="text-base font-bold text-white flex items-center gap-2">
+            Interactive Code Sandbox & Output
+            {isPyodideLoading && <Loader2 className="w-3.5 h-3.5 text-slate-400 animate-spin" />}
+          </h2>
         </div>
         
         <div className="flex items-center gap-2">
@@ -112,11 +154,11 @@ export const CodePlayground: React.FC<CodePlaygroundProps> = ({
 
           <button
             onClick={handleRunCode}
-            disabled={isRunning}
+            disabled={isRunning || (initialLanguage.toLowerCase() === 'python' && !pyodide)}
             className="flex items-center gap-1.5 px-4 py-1.5 text-xs font-bold text-white bg-amber-600 hover:bg-amber-500 rounded-lg shadow-md transition disabled:opacity-50"
           >
-            <Play className="w-3.5 h-3.5 fill-current" />
-            <span>{isRunning ? 'Previewing...' : 'Preview Output'}</span>
+            {isRunning ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Play className="w-3.5 h-3.5 fill-current" />}
+            <span>{isRunning ? 'Running...' : 'Run Code'}</span>
           </button>
         </div>
       </div>
@@ -139,7 +181,7 @@ export const CodePlayground: React.FC<CodePlaygroundProps> = ({
         {/* Output Console Area */}
         <div className="bg-slate-950 border border-slate-800 rounded-xl overflow-hidden flex flex-col">
           <div className="bg-slate-900/80 px-4 py-2 border-b border-slate-800 text-xs font-mono text-slate-400 flex items-center justify-between">
-            <span>Preview Output</span>
+            <span>Console Output</span>
             <button
               onClick={() => setOutput('')}
               className="text-slate-500 hover:text-slate-300 transition"
@@ -148,7 +190,7 @@ export const CodePlayground: React.FC<CodePlaygroundProps> = ({
             </button>
           </div>
           <pre className="w-full h-96 p-4 font-mono text-xs text-amber-300 overflow-y-auto leading-relaxed whitespace-pre-wrap">
-            {output || '// Click "Preview Output" for a deterministic learning preview.'}
+            {output || '// Click "Run Code" to execute securely in your browser using Pyodide (WASM).'}
           </pre>
         </div>
       </div>
