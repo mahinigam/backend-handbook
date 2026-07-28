@@ -168,7 +168,7 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({ onRunCodeInSandbox }
                     className="flex items-center gap-1 text-xs font-semibold text-amber-200 bg-amber-900/50 hover:bg-amber-800/80 px-2.5 py-1 rounded border border-amber-700/50"
                   >
                     <Play className="w-3.5 h-3.5 fill-current" />
-                    <span>Test Code</span>
+                    <span>Preview Code</span>
                   </button>
                 )}
               </div>

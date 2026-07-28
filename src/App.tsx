@@ -1,28 +1,26 @@
-import React, { useState, useEffect } from 'react';
-import { ALL_VOLUMES, getVolumeById, searchHandbook } from './data/volumes';
+import React, { Suspense, lazy, useState, useEffect } from 'react';
+import { ALL_VOLUMES, getVolumeById, searchFullHandbook, type HandbookSearchResult } from './data/volumes';
 import { Volume, VolumeChapter } from './types';
 import { Navbar } from './components/Navbar';
 import { ChapterReader } from './components/ChapterReader';
-import { BookIndexView } from './components/BookIndexView';
-import { CodePlayground } from './components/CodePlayground';
-import { ProjectsView } from './components/ProjectsView';
-import { InterviewsView } from './components/InterviewsView';
-import { RoadmapView } from './components/RoadmapView';
-import { ProductionMatrixView } from './components/ProductionMatrixView';
-import { AITutorModal } from './components/AITutorModal';
 import { 
   BookOpen, 
-  Terminal, 
-  Layers, 
   Search, 
-  Zap, 
-  ShieldCheck, 
-  Server, 
-  Database, 
-  Cpu, 
-  Sparkles,
-  ArrowRight
 } from 'lucide-react';
+
+const BookIndexView = lazy(() => import('./components/BookIndexView').then((module) => ({ default: module.BookIndexView })));
+const CodePlayground = lazy(() => import('./components/CodePlayground').then((module) => ({ default: module.CodePlayground })));
+const ProjectsView = lazy(() => import('./components/ProjectsView').then((module) => ({ default: module.ProjectsView })));
+const InterviewsView = lazy(() => import('./components/InterviewsView').then((module) => ({ default: module.InterviewsView })));
+const RoadmapView = lazy(() => import('./components/RoadmapView').then((module) => ({ default: module.RoadmapView })));
+const ProductionMatrixView = lazy(() => import('./components/ProductionMatrixView').then((module) => ({ default: module.ProductionMatrixView })));
+const AITutorModal = lazy(() => import('./components/AITutorModal').then((module) => ({ default: module.AITutorModal })));
+
+const LoadingPanel = () => (
+  <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 text-xs text-slate-400">
+    Loading section...
+  </div>
+);
 
 export function App() {
   const [activeTab, setActiveTab] = useState<string>('handbook');
@@ -67,7 +65,36 @@ export function App() {
 
   const selectedVolume = getVolumeById(selectedVolumeId) || ALL_VOLUMES[0];
 
-  const searchResults = searchQuery ? searchHandbook(searchQuery) : [];
+  const [searchResults, setSearchResults] = useState<HandbookSearchResult[]>([]);
+  const [searchLoading, setSearchLoading] = useState(false);
+
+  useEffect(() => {
+    const trimmedQuery = searchQuery.trim();
+    let cancelled = false;
+
+    if (!trimmedQuery) {
+      setSearchResults([]);
+      setSearchLoading(false);
+      return;
+    }
+
+    setSearchLoading(true);
+    searchFullHandbook(trimmedQuery)
+      .then((results) => {
+        if (!cancelled) setSearchResults(results);
+      })
+      .catch((err) => {
+        console.error('Failed to search handbook', err);
+        if (!cancelled) setSearchResults([]);
+      })
+      .finally(() => {
+        if (!cancelled) setSearchLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [searchQuery]);
 
   const handleOpenAITutor = (
     prompt: string = '',
@@ -115,7 +142,9 @@ export function App() {
               </button>
             </div>
 
-            {searchResults.length === 0 ? (
+            {searchLoading ? (
+              <p className="text-xs text-slate-400 py-4">Searching textbook chapters, projects, interviews, roadmap, and matrix...</p>
+            ) : searchResults.length === 0 ? (
               <p className="text-xs text-slate-400 py-4">No matching sections found for "{searchQuery}". Try searching for terms like MVCC, Epoll, Kafka, Redis, or Idempotency.</p>
             ) : (
               <div className="space-y-3">
@@ -123,22 +152,24 @@ export function App() {
                   <div
                     key={i}
                     onClick={() => {
-                      setSelectedVolumeId(res.volume.id);
-                      setSelectedChapter(res.chapter);
+                      if (res.type === 'chapter') {
+                        setSelectedVolumeId(res.volume.id);
+                        setSelectedChapter(res.chapter);
+                        setActiveTab('handbook');
+                      } else {
+                        setActiveTab(res.tab);
+                      }
                       setSearchQuery('');
-                      setActiveTab('handbook');
                     }}
                     className="p-4 bg-slate-950 hover:bg-slate-950/80 border border-slate-800 hover:border-amber-500/40 rounded-xl cursor-pointer transition space-y-1"
                   >
                     <div className="flex items-center gap-2 text-[10px] font-bold text-amber-400 uppercase tracking-wider">
-                      <span>Volume {res.volume.volumeNumber}</span>
-                      <span>•</span>
-                      <span>Chapter {res.chapter.chapterNumber}</span>
+                      <span>{res.label}</span>
                       <span>•</span>
                       <span className="text-slate-400">{res.matchType}</span>
                     </div>
-                    <h3 className="text-sm font-bold text-white">{res.section.title}</h3>
-                    <p className="text-xs text-slate-300 line-clamp-2">{res.section.problemStatement}</p>
+                    <h3 className="text-sm font-bold text-white">{res.title}</h3>
+                    <p className="text-xs text-slate-300 line-clamp-2">{res.description}</p>
                   </div>
                 ))}
               </div>
@@ -182,69 +213,75 @@ export function App() {
               </div>
             )}
 
-            {/* View Switching */}
-            {activeTab === 'index' && (
-              <BookIndexView
-                onSelectChapter={(volId, chapter) => {
-                  setSelectedVolumeId(volId);
-                  setSelectedChapter(chapter);
-                  setActiveTab('handbook');
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                }}
-                completedSections={completedSections}
-                onToggleCompleteSection={handleToggleCompleteSection}
-                onSelectTab={(tab) => {
-                  setActiveTab(tab);
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                }}
-              />
-            )}
+            <Suspense fallback={<LoadingPanel />}>
+              {/* View Switching */}
+              {activeTab === 'index' && (
+                <BookIndexView
+                  onSelectChapter={(volId, chapter) => {
+                    setSelectedVolumeId(volId);
+                    setSelectedChapter(chapter);
+                    setActiveTab('handbook');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  completedSections={completedSections}
+                  onToggleCompleteSection={handleToggleCompleteSection}
+                  onSelectTab={(tab) => {
+                    setActiveTab(tab);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                />
+              )}
 
-            {activeTab === 'handbook' && (
-              <ChapterReader
-                volume={selectedVolume}
-                selectedChapter={selectedChapter}
-                onSelectChapter={setSelectedChapter}
-                onRunCodeInSandbox={handleRunCodeInSandbox}
-              />
-            )}
+              {activeTab === 'handbook' && (
+                <ChapterReader
+                  volume={selectedVolume}
+                  selectedChapter={selectedChapter}
+                  onSelectChapter={setSelectedChapter}
+                  onRunCodeInSandbox={handleRunCodeInSandbox}
+                />
+              )}
 
-            {activeTab === 'projects' && (
-              <ProjectsView onRunCodeInSandbox={handleRunCodeInSandbox} />
-            )}
+              {activeTab === 'projects' && (
+                <ProjectsView onRunCodeInSandbox={handleRunCodeInSandbox} />
+              )}
 
-            {activeTab === 'interviews' && (
-              <InterviewsView onOpenAITutor={handleOpenAITutor} />
-            )}
+              {activeTab === 'interviews' && (
+                <InterviewsView onOpenAITutor={handleOpenAITutor} />
+              )}
 
-            {activeTab === 'roadmap' && (
-              <RoadmapView />
-            )}
+              {activeTab === 'roadmap' && (
+                <RoadmapView />
+              )}
 
-            {activeTab === 'matrix' && (
-              <ProductionMatrixView />
-            )}
+              {activeTab === 'matrix' && (
+                <ProductionMatrixView />
+              )}
 
-            {activeTab === 'playground' && (
-              <CodePlayground
-                initialCode={sandboxCode}
-                initialLanguage={sandboxLang}
-                onAskAITutor={handleOpenAITutor}
-              />
-            )}
+              {activeTab === 'playground' && (
+                <CodePlayground
+                  initialCode={sandboxCode}
+                  initialLanguage={sandboxLang}
+                  onAskAITutor={handleOpenAITutor}
+                />
+              )}
+            </Suspense>
           </>
         )}
 
       </main>
 
       {/* AI Staff Engineer Tutor Modal */}
-      <AITutorModal
-        isOpen={aiModalOpen}
-        onClose={() => setAiModalOpen(false)}
-        initialPrompt={aiModalPrompt}
-        initialMode={aiModalMode}
-        currentContext={selectedVolume}
-      />
+      {aiModalOpen && (
+        <Suspense fallback={null}>
+          <AITutorModal
+            isOpen={aiModalOpen}
+            onClose={() => setAiModalOpen(false)}
+            initialPrompt={aiModalPrompt}
+            initialMode={aiModalMode}
+            currentContext={selectedVolume}
+          />
+        </Suspense>
+      )}
 
     </div>
   );

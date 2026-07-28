@@ -39,7 +39,7 @@ export const InterviewsView: React.FC<InterviewsViewProps> = ({ onOpenAITutor })
         </div>
         <h1 className="text-2xl font-extrabold text-white">Top Company Technical Interview Bank</h1>
         <p className="text-xs text-indigo-200 mt-2 max-w-3xl leading-relaxed">
-         {volume8Interviews.length}+ carefully selected, high-quality interview questions asked at Google, Microsoft, Amazon, Stripe, Uber, Databricks, Atlassian, Netflix, Rubrik, and OpenAI.
+         {volume8Interviews.length} structured practice prompts inspired by senior and staff-level interview themes at Google, Microsoft, Amazon, Stripe, Uber, Databricks, Atlassian, Netflix, Rubrik, and OpenAI.
           Complete with first-principles answers, C-level internal architecture breakdowns, and interviewer evaluation criteria.
         </p>
 

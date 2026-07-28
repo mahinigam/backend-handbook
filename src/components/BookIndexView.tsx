@@ -40,6 +40,7 @@ export const BookIndexView: React.FC<BookIndexViewProps> = ({
   const progressPercent = totalSections > 0 ? Math.round((completedCount / totalSections) * 100) : 0;
 
   const filteredVolumes = ALL_VOLUMES.filter((vol) => {
+    if (selectedVolFilter === 'extras') return false;
     if (selectedVolFilter !== 'all' && vol.id !== selectedVolFilter) return false;
     if (!filterQuery) return true;
     const query = filterQuery.toLowerCase();
@@ -79,9 +80,9 @@ export const BookIndexView: React.FC<BookIndexViewProps> = ({
 
           {/* Reading Progress Indicator */}
           <div className="pt-4 border-t border-slate-800/80 grid grid-cols-1 md:grid-cols-4 gap-4 text-xs">
-            <div className="bg-slate-950/60 p-3 rounded-xl border border-slate-800">
-              <div className="text-slate-400 font-semibold mb-1">Total Volumes</div>
-              <div className="text-lg font-bold text-amber-400">6 Core Volumes</div>
+              <div className="bg-slate-950/60 p-3 rounded-xl border border-slate-800">
+                <div className="text-slate-400 font-semibold mb-1">Total Volumes</div>
+              <div className="text-lg font-bold text-amber-400">9 Volumes</div>
             </div>
             <div className="bg-slate-950/60 p-3 rounded-xl border border-slate-800">
               <div className="text-slate-400 font-semibold mb-1">Total Chapters</div>
@@ -251,7 +252,7 @@ export const BookIndexView: React.FC<BookIndexViewProps> = ({
       </div>
 
       {/* Extras Volumes (7, 8, 9) */}
-      {(selectedVolFilter === 'all' || selectedVolFilter === 'extras') && !filterQuery && (
+      {(selectedVolFilter === 'all' || selectedVolFilter === 'extras') && (
         <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-6 shadow-xl relative overflow-hidden mt-8">
           <div className="border-b border-slate-800 pb-4">
             <h2 className="text-xl font-bold text-white">Bonus Volumes (7-9)</h2>
@@ -286,7 +287,7 @@ export const BookIndexView: React.FC<BookIndexViewProps> = ({
                   Top Company Interviews
                 </h3>
                 <p className="text-xs text-slate-400 mt-2">
-                  170 high-quality technical interview questions asked at Google, Stripe, Uber, Netflix, and OpenAI. Features first-principles answers and AI mock grading.
+                  170 structured technical interview practice prompts inspired by senior and staff-level backend interview themes. Features first-principles answers and AI mock grading.
                 </p>
               </div>
               <div className="text-xs text-indigo-400 font-semibold flex items-center gap-1 mt-4">

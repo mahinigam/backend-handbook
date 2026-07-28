@@ -34,7 +34,7 @@ class ValidatedString:
         instance.__dict__[self.private_name] = value
 
 class UserProfile:
-    username = ValidatedString(min_length=3, regex_pattern=r"^[a-zA-Z0-0_]+$")
+    username = ValidatedString(min_length=3, regex_pattern=r"^[a-zA-Z0-9_]+$")
 
     def __init__(self, username: str):
         self.username = username
@@ -62,16 +62,16 @@ export const CodePlayground: React.FC<CodePlaygroundProps> = ({
 
   const handleRunCode = () => {
     setIsRunning(true);
-    setOutput('Running in backend sandbox execution environment...\n');
+    setOutput('Preparing deterministic learning preview...\n');
 
     setTimeout(() => {
-      // Basic client-side Python output simulation or execution
+      // This browser-only preview is intentionally deterministic; it is not a Python runtime.
       if (code.includes('UserProfile')) {
-        setOutput(`✅ User Created Successfully: staff_dev\nTesting Validation Failure Case...\n❌ Validation Error Caught: Value must be at least 3 chars, got 2\n\n--- Execution Completed in 12ms ---`);
+        setOutput(`User Created Successfully: staff_dev\nTesting Validation Failure Case...\nValidation Error Caught: Value must be at least 3 chars, got 2\n\n--- Preview Completed ---`);
       } else if (code.includes('SlidingWindowRateLimiter') || code.includes('rate_limit')) {
-        setOutput(`Request 1: Allowed=True, Remaining Tokens=2\nRequest 2: Allowed=True, Remaining Tokens=1\nRequest 3: Allowed=True, Remaining Tokens=0\nRequest 4: Allowed=False, Remaining Tokens=0\nRequest 5: Allowed=False, Remaining Tokens=0\n\n--- Execution Completed in 8ms ---`);
+        setOutput(`Request 1: Allowed=True, Remaining Tokens=2\nRequest 2: Allowed=True, Remaining Tokens=1\nRequest 3: Allowed=True, Remaining Tokens=0\nRequest 4: Allowed=False, Remaining Tokens=0\nRequest 5: Allowed=False, Remaining Tokens=0\n\n--- Preview Completed ---`);
       } else {
-        setOutput(`[Sandbox Executor Simulation]\nCode verified successfully against CPython runtime syntax parser.\nNo syntax or type errors detected.\n\n--- Execution Completed in 15ms ---`);
+        setOutput(`[Learning Sandbox Preview]\nThis browser-only tool does not execute arbitrary Python. Use Copy Code to run the snippet locally, or ask the AI tutor for a code review.\n\n--- Preview Completed ---`);
       }
       setIsRunning(false);
     }, 600);
@@ -88,7 +88,7 @@ export const CodePlayground: React.FC<CodePlaygroundProps> = ({
       <div className="flex items-center justify-between bg-slate-900 border border-slate-800 p-4 rounded-xl">
         <div className="flex items-center gap-2">
           <Terminal className="w-5 h-5 text-amber-400" />
-          <h2 className="text-base font-bold text-white">Interactive Code Sandbox & Execution Runner</h2>
+          <h2 className="text-base font-bold text-white">Interactive Code Sandbox & Output Preview</h2>
         </div>
         
         <div className="flex items-center gap-2">
@@ -116,7 +116,7 @@ export const CodePlayground: React.FC<CodePlaygroundProps> = ({
             className="flex items-center gap-1.5 px-4 py-1.5 text-xs font-bold text-white bg-amber-600 hover:bg-amber-500 rounded-lg shadow-md transition disabled:opacity-50"
           >
             <Play className="w-3.5 h-3.5 fill-current" />
-            <span>{isRunning ? 'Running...' : 'Run Code'}</span>
+            <span>{isRunning ? 'Previewing...' : 'Preview Output'}</span>
           </button>
         </div>
       </div>
@@ -125,7 +125,7 @@ export const CodePlayground: React.FC<CodePlaygroundProps> = ({
         {/* Code Editor Area */}
         <div className="bg-slate-950 border border-slate-800 rounded-xl overflow-hidden flex flex-col">
           <div className="bg-slate-900/80 px-4 py-2 border-b border-slate-800 text-xs font-mono text-slate-400 flex items-center justify-between">
-            <span>Editor (Python 3.12 / FastAPI)</span>
+            <span>Editor (Python / FastAPI snippets)</span>
             <span>UTF-8</span>
           </div>
           <textarea
@@ -139,7 +139,7 @@ export const CodePlayground: React.FC<CodePlaygroundProps> = ({
         {/* Output Console Area */}
         <div className="bg-slate-950 border border-slate-800 rounded-xl overflow-hidden flex flex-col">
           <div className="bg-slate-900/80 px-4 py-2 border-b border-slate-800 text-xs font-mono text-slate-400 flex items-center justify-between">
-            <span>Console Output</span>
+            <span>Preview Output</span>
             <button
               onClick={() => setOutput('')}
               className="text-slate-500 hover:text-slate-300 transition"
@@ -148,7 +148,7 @@ export const CodePlayground: React.FC<CodePlaygroundProps> = ({
             </button>
           </div>
           <pre className="w-full h-96 p-4 font-mono text-xs text-amber-300 overflow-y-auto leading-relaxed whitespace-pre-wrap">
-            {output || '// Click "Run Code" to execute code in sandbox...'}
+            {output || '// Click "Preview Output" for a deterministic learning preview.'}
           </pre>
         </div>
       </div>

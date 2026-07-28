@@ -17,10 +17,10 @@ function getGenAI(): GoogleGenAI {
   if (!genaiClient) {
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
-      console.warn('Warning: GEMINI_API_KEY is not set. AI features will fallback gracefully.');
+      throw new Error('GEMINI_API_KEY is not configured.');
     }
     genaiClient = new GoogleGenAI({
-      apiKey: apiKey || 'DUMMY_KEY_FOR_DEV',
+      apiKey,
       httpOptions: {
         headers: {
           'User-Agent': 'aistudio-build',
@@ -45,7 +45,15 @@ app.post('/api/ai/query', async (req, res) => {
       return res.status(400).json({ error: 'Prompt is required' });
     }
 
-    const ai = getGenAI();
+    let ai: GoogleGenAI;
+    try {
+      ai = getGenAI();
+    } catch (error: any) {
+      return res.status(503).json({
+        error: 'AI tutor is not configured',
+        details: error?.message || String(error),
+      });
+    }
 
     let modelName = 'gemini-3.6-flash';
     let thinkingLevel = ThinkingLevel.LOW;
@@ -105,7 +113,15 @@ app.post('/api/ai/search-grounding', async (req, res) => {
       return res.status(400).json({ error: 'Prompt is required' });
     }
 
-    const ai = getGenAI();
+    let ai: GoogleGenAI;
+    try {
+      ai = getGenAI();
+    } catch (error: any) {
+      return res.status(503).json({
+        error: 'Search grounding is not configured',
+        details: error?.message || String(error),
+      });
+    }
     const response = await ai.models.generateContent({
       model: 'gemini-3.5-flash',
       contents: prompt,
