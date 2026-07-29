@@ -80,25 +80,25 @@ export const BookIndexView: React.FC<BookIndexViewProps> = ({
 
           {/* Reading Progress Indicator */}
           <div className="pt-4 border-t border-[var(--color-dark-border)]/80 grid grid-cols-1 md:grid-cols-4 gap-4 text-xs">
-              <div className="bg-[var(--color-dark-base)]/60 p-3 rounded-xl border border-[var(--color-dark-border)]">
+              <div className="bg-[var(--color-dark-surface)] p-3 rounded-xl border border-[var(--color-dark-border)]">
                 <div className="text-slate-400 font-semibold mb-1">Total Volumes</div>
-              <div className="text-lg font-bold text-gold">9 Volumes</div>
+              <div className="text-lg font-bold text-white">9 Volumes</div>
             </div>
-            <div className="bg-[var(--color-dark-base)]/60 p-3 rounded-xl border border-[var(--color-dark-border)]">
+            <div className="bg-[var(--color-dark-surface)] p-3 rounded-xl border border-[var(--color-dark-border)]">
               <div className="text-slate-400 font-semibold mb-1">Total Chapters</div>
-              <div className="text-lg font-bold text-primary">{totalChapters} Chapters</div>
+              <div className="text-lg font-bold text-white">{totalChapters} Chapters</div>
             </div>
-            <div className="bg-[var(--color-dark-base)]/60 p-3 rounded-xl border border-[var(--color-dark-border)]">
+            <div className="bg-[var(--color-dark-surface)] p-3 rounded-xl border border-[var(--color-dark-border)]">
               <div className="text-slate-400 font-semibold mb-1">Detailed Sections</div>
-              <div className="text-lg font-bold text-primary">{totalSections} Deep Sections</div>
+              <div className="text-lg font-bold text-white">{totalSections} Deep Sections</div>
             </div>
-            <div className="bg-[var(--color-dark-base)]/60 p-3 rounded-xl border border-[var(--color-dark-border)]">
+            <div className="bg-[var(--color-dark-surface)] p-3 rounded-xl border border-[var(--color-dark-border)]">
               <div className="text-slate-400 font-semibold mb-1">Reading Progress</div>
               <div className="flex items-center justify-between">
                 <span className="text-lg font-bold text-white">{progressPercent}% Completed</span>
                 <span className="text-slate-400">{completedCount}/{totalSections}</span>
               </div>
-              <div className="w-full bg-slate-800 h-1.5 rounded-full mt-2 overflow-hidden">
+              <div className="w-full bg-[var(--color-dark-border)]/50 h-1.5 rounded-full mt-2 overflow-hidden">
                 <div 
                   className="bg-gold h-full transition-all duration-300" 
                   style={{ width: `${progressPercent}%` }} 
@@ -129,7 +129,7 @@ export const BookIndexView: React.FC<BookIndexViewProps> = ({
             onClick={() => setSelectedVolFilter('all')}
             className={`px-3 py-1.5 rounded-lg text-xs font-medium transition ${
               selectedVolFilter === 'all'
-                ? 'bg-gold/20 text-gold border border-gold/30'
+                ? 'bg-[var(--color-dark-surface)] text-white border border-gold/40 shadow-sm shadow-gold/5'
                 : 'bg-[var(--color-dark-base)] text-slate-400 hover:text-white border border-[var(--color-dark-border)]'
             }`}
           >
@@ -141,7 +141,7 @@ export const BookIndexView: React.FC<BookIndexViewProps> = ({
               onClick={() => setSelectedVolFilter(v.id)}
               className={`px-2.5 py-1.5 rounded-lg text-xs font-medium transition ${
                 selectedVolFilter === v.id
-                  ? 'bg-gold/20 text-gold border border-gold/30'
+                  ? 'bg-[var(--color-dark-surface)] text-white border border-gold/40 shadow-sm shadow-gold/5'
                   : 'bg-[var(--color-dark-base)] text-slate-400 hover:text-white border border-[var(--color-dark-border)]'
               }`}
             >
@@ -152,7 +152,7 @@ export const BookIndexView: React.FC<BookIndexViewProps> = ({
             onClick={() => setSelectedVolFilter('extras')}
             className={`px-2.5 py-1.5 rounded-lg text-xs font-medium transition ${
               selectedVolFilter === 'extras'
-                ? 'bg-gold/20 text-gold border border-gold/30'
+                ? 'bg-[var(--color-dark-surface)] text-white border border-gold/40 shadow-sm shadow-gold/5'
                 : 'bg-[var(--color-dark-base)] text-slate-400 hover:text-white border border-[var(--color-dark-border)]'
             }`}
           >
