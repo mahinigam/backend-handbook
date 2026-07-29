@@ -58,14 +58,14 @@ export const BookIndexView: React.FC<BookIndexViewProps> = ({
     <div className="space-y-8 max-w-7xl mx-auto pb-12">
       
       {/* Book Title & Header Banner */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[var(--color-dark-surface)] via-primary/20 to-[var(--color-dark-base)] border border-gold/30 p-8 shadow-2xl">
-        <div className="absolute top-0 right-0 p-10 opacity-10 pointer-events-none">
-          <BookOpen className="w-72 h-72 text-gold" />
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[var(--color-dark-surface)] via-primary/10 to-[var(--color-dark-base)] border border-primary/20 p-8 shadow-2xl">
+        <div className="absolute top-0 right-0 p-10 opacity-5 pointer-events-none">
+          <BookOpen className="w-72 h-72 text-white" />
         </div>
 
         <div className="relative z-10 space-y-4">
           <div className="flex flex-wrap items-center gap-3">
-            <span className="text-xs font-bold uppercase tracking-wider text-gold bg-gold/10 px-3 py-1 rounded-full border border-gold/20 flex items-center gap-1.5">
+            <span className="text-xs font-bold uppercase tracking-wider text-primary bg-primary/10 px-3 py-1 rounded-full border border-primary/20 flex items-center gap-1.5">
               <Sparkles className="w-3.5 h-3.5" /> Staff Backend Engineering Handbook
             </span>
             <span className="text-xs font-mono text-slate-400">First Edition • 2026 Edition</span>
@@ -80,19 +80,19 @@ export const BookIndexView: React.FC<BookIndexViewProps> = ({
 
           {/* Reading Progress Indicator */}
           <div className="pt-4 border-t border-[var(--color-dark-border)]/80 grid grid-cols-1 md:grid-cols-4 gap-4 text-xs">
-              <div className="bg-[var(--color-dark-surface)] p-3 rounded-xl border border-[var(--color-dark-border)]">
+              <div className="bg-white/5 backdrop-blur-md p-3 rounded-xl border border-white/10 shadow-inner shadow-white/5">
                 <div className="text-slate-400 font-semibold mb-1">Total Volumes</div>
               <div className="text-lg font-bold text-white">9 Volumes</div>
             </div>
-            <div className="bg-[var(--color-dark-surface)] p-3 rounded-xl border border-[var(--color-dark-border)]">
+            <div className="bg-white/5 backdrop-blur-md p-3 rounded-xl border border-white/10 shadow-inner shadow-white/5">
               <div className="text-slate-400 font-semibold mb-1">Total Chapters</div>
               <div className="text-lg font-bold text-white">{totalChapters} Chapters</div>
             </div>
-            <div className="bg-[var(--color-dark-surface)] p-3 rounded-xl border border-[var(--color-dark-border)]">
+            <div className="bg-white/5 backdrop-blur-md p-3 rounded-xl border border-white/10 shadow-inner shadow-white/5">
               <div className="text-slate-400 font-semibold mb-1">Detailed Sections</div>
               <div className="text-lg font-bold text-white">{totalSections} Deep Sections</div>
             </div>
-            <div className="bg-[var(--color-dark-surface)] p-3 rounded-xl border border-[var(--color-dark-border)]">
+            <div className="bg-white/5 backdrop-blur-md p-3 rounded-xl border border-white/10 shadow-inner shadow-white/5">
               <div className="text-slate-400 font-semibold mb-1">Reading Progress</div>
               <div className="flex items-center justify-between">
                 <span className="text-lg font-bold text-white">{progressPercent}% Completed</span>
@@ -129,7 +129,7 @@ export const BookIndexView: React.FC<BookIndexViewProps> = ({
             onClick={() => setSelectedVolFilter('all')}
             className={`px-3 py-1.5 rounded-lg text-xs font-medium transition ${
               selectedVolFilter === 'all'
-                ? 'bg-[var(--color-dark-surface)] text-white border border-gold/40 shadow-sm shadow-gold/5'
+                ? 'bg-white/10 text-white font-semibold'
                 : 'bg-[var(--color-dark-base)] text-slate-400 hover:text-white border border-[var(--color-dark-border)]'
             }`}
           >
@@ -141,7 +141,7 @@ export const BookIndexView: React.FC<BookIndexViewProps> = ({
               onClick={() => setSelectedVolFilter(v.id)}
               className={`px-2.5 py-1.5 rounded-lg text-xs font-medium transition ${
                 selectedVolFilter === v.id
-                  ? 'bg-[var(--color-dark-surface)] text-white border border-gold/40 shadow-sm shadow-gold/5'
+                  ? 'bg-white/10 text-white font-semibold'
                   : 'bg-[var(--color-dark-base)] text-slate-400 hover:text-white border border-[var(--color-dark-border)]'
               }`}
             >
@@ -152,7 +152,7 @@ export const BookIndexView: React.FC<BookIndexViewProps> = ({
             onClick={() => setSelectedVolFilter('extras')}
             className={`px-2.5 py-1.5 rounded-lg text-xs font-medium transition ${
               selectedVolFilter === 'extras'
-                ? 'bg-[var(--color-dark-surface)] text-white border border-gold/40 shadow-sm shadow-gold/5'
+                ? 'bg-white/10 text-white font-semibold'
                 : 'bg-[var(--color-dark-base)] text-slate-400 hover:text-white border border-[var(--color-dark-border)]'
             }`}
           >

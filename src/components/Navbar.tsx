@@ -36,7 +36,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           
           {/* Logo & Brand */}
           <div className="flex items-center gap-3 cursor-pointer" onClick={() => setActiveTab('handbook')}>
-            <div className="p-2 rounded-xl bg-gradient-to-tr from-gold to-primary text-white shadow-md shadow-primary/20">
+            <div className="p-2 rounded-xl bg-gradient-to-br from-primary to-violet-600 text-white shadow-md shadow-primary/20">
               <Terminal className="w-5 h-5" />
             </div>
             <div>
@@ -62,7 +62,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   setSearchQuery(e.target.value);
                   if (activeTab !== 'handbook') setActiveTab('handbook');
                 }}
-                className="w-full pl-9 pr-4 py-1.5 bg-[var(--color-dark-base)] border border-[var(--color-dark-border)] rounded-lg text-sm text-slate-200 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-gold/50 focus:border-gold transition"
+                className="w-full pl-9 pr-4 py-1.5 bg-white/5 border border-white/10 hover:bg-white/10 rounded-lg text-sm text-slate-200 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition"
               />
               {searchQuery && (
                 <button
@@ -79,7 +79,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           <div className="flex items-center gap-2">
             <button
               onClick={() => onOpenAITutor('high_thinking')}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary hover:bg-primary/80 text-white text-xs font-semibold shadow-sm transition shadow-primary/20"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary/10 border border-primary/30 hover:bg-primary hover:text-white text-primary text-xs font-semibold shadow-sm transition"
               title="Ask Staff AI Engineer with High Thinking Reasoning"
             >
               <Bot className="w-4 h-4" />
@@ -98,7 +98,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             onClick={() => setActiveTab('index')}
             className={`flex items-center gap-2 px-3 py-1.5 rounded-md transition whitespace-nowrap ${
               activeTab === 'index'
-                ? 'bg-[var(--color-dark-surface)] text-white font-semibold border border-gold/40 shadow-sm shadow-gold/5'
+                ? 'bg-white/10 text-white font-semibold'
                 : 'hover:bg-slate-800 text-slate-300'
             }`}
           >
@@ -110,7 +110,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             onClick={() => setActiveTab('handbook')}
             className={`flex items-center gap-2 px-3 py-1.5 rounded-md transition whitespace-nowrap ${
               activeTab === 'handbook'
-                ? 'bg-[var(--color-dark-surface)] text-white font-semibold border border-gold/40 shadow-sm shadow-gold/5'
+                ? 'bg-white/10 text-white font-semibold'
                 : 'hover:bg-slate-800 text-slate-300'
             }`}
           >
@@ -122,7 +122,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             onClick={() => setActiveTab('projects')}
             className={`flex items-center gap-2 px-3 py-1.5 rounded-md transition whitespace-nowrap ${
               activeTab === 'projects'
-                ? 'bg-[var(--color-dark-surface)] text-white font-semibold border border-gold/40 shadow-sm shadow-gold/5'
+                ? 'bg-white/10 text-white font-semibold'
                 : 'hover:bg-slate-800 text-slate-300'
             }`}
           >
@@ -134,7 +134,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             onClick={() => setActiveTab('interviews')}
             className={`flex items-center gap-2 px-3 py-1.5 rounded-md transition whitespace-nowrap ${
               activeTab === 'interviews'
-                ? 'bg-[var(--color-dark-surface)] text-white font-semibold border border-gold/40 shadow-sm shadow-gold/5'
+                ? 'bg-white/10 text-white font-semibold'
                 : 'hover:bg-slate-800 text-slate-300'
             }`}
           >
@@ -146,7 +146,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             onClick={() => setActiveTab('roadmap')}
             className={`flex items-center gap-2 px-3 py-1.5 rounded-md transition whitespace-nowrap ${
               activeTab === 'roadmap'
-                ? 'bg-[var(--color-dark-surface)] text-white font-semibold border border-gold/40 shadow-sm shadow-gold/5'
+                ? 'bg-white/10 text-white font-semibold'
                 : 'hover:bg-slate-800 text-slate-300'
             }`}
           >
@@ -158,7 +158,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             onClick={() => setActiveTab('matrix')}
             className={`flex items-center gap-2 px-3 py-1.5 rounded-md transition whitespace-nowrap ${
               activeTab === 'matrix'
-                ? 'bg-[var(--color-dark-surface)] text-white font-semibold border border-gold/40 shadow-sm shadow-gold/5'
+                ? 'bg-white/10 text-white font-semibold'
                 : 'hover:bg-slate-800 text-slate-300'
             }`}
           >
@@ -170,7 +170,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             onClick={() => setActiveTab('playground')}
             className={`flex items-center gap-2 px-3 py-1.5 rounded-md transition whitespace-nowrap ${
               activeTab === 'playground'
-                ? 'bg-[var(--color-dark-surface)] text-white font-semibold border border-gold/40 shadow-sm shadow-gold/5'
+                ? 'bg-white/10 text-white font-semibold'
                 : 'hover:bg-slate-800 text-slate-300'
             }`}
           >
