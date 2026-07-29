@@ -124,9 +124,9 @@ export const CodePlayground: React.FC<CodePlaygroundProps> = ({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between bg-slate-900 border border-slate-800 p-4 rounded-xl">
+      <div className="flex items-center justify-between bg-[var(--color-dark-surface)] border border-[var(--color-dark-border)] p-4 rounded-xl">
         <div className="flex items-center gap-2">
-          <Terminal className="w-5 h-5 text-amber-400" />
+          <Terminal className="w-5 h-5 text-gold" />
           <h2 className="text-base font-bold text-white flex items-center gap-2">
             Interactive Code Sandbox & Output
             {isPyodideLoading && <Loader2 className="w-3.5 h-3.5 text-slate-400 animate-spin" />}
@@ -138,16 +138,16 @@ export const CodePlayground: React.FC<CodePlaygroundProps> = ({
             onClick={handleCopy}
             className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-300 bg-slate-800 hover:bg-slate-700 rounded-lg border border-slate-700 transition"
           >
-            {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+            {copied ? <Check className="w-3.5 h-3.5 text-primary" /> : <Copy className="w-3.5 h-3.5" />}
             <span>{copied ? 'Copied' : 'Copy Code'}</span>
           </button>
 
           {onAskAITutor && (
             <button
               onClick={() => onAskAITutor(`Please perform a staff-level code review for this backend code:\n\n\`\`\`python\n${code}\n\`\`\``, 'code_review')}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-purple-200 bg-purple-900/50 hover:bg-purple-900/80 rounded-lg border border-purple-700/50 transition"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-primary bg-primary/50 hover:bg-primary/80 rounded-lg border border-primary/50 transition"
             >
-              <Sparkles className="w-3.5 h-3.5 text-purple-300" />
+              <Sparkles className="w-3.5 h-3.5 text-primary" />
               <span>AI Code Review</span>
             </button>
           )}
@@ -155,7 +155,7 @@ export const CodePlayground: React.FC<CodePlaygroundProps> = ({
           <button
             onClick={handleRunCode}
             disabled={isRunning || (initialLanguage.toLowerCase() === 'python' && !pyodide)}
-            className="flex items-center gap-1.5 px-4 py-1.5 text-xs font-bold text-white bg-amber-600 hover:bg-amber-500 rounded-lg shadow-md transition disabled:opacity-50"
+            className="flex items-center gap-1.5 px-4 py-1.5 text-xs font-bold text-white bg-gold hover:bg-gold rounded-lg shadow-md transition disabled:opacity-50"
           >
             {isRunning ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Play className="w-3.5 h-3.5 fill-current" />}
             <span>{isRunning ? 'Running...' : 'Run Code'}</span>
@@ -165,22 +165,22 @@ export const CodePlayground: React.FC<CodePlaygroundProps> = ({
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Code Editor Area */}
-        <div className="bg-slate-950 border border-slate-800 rounded-xl overflow-hidden flex flex-col">
-          <div className="bg-slate-900/80 px-4 py-2 border-b border-slate-800 text-xs font-mono text-slate-400 flex items-center justify-between">
+        <div className="bg-[var(--color-dark-base)] border border-[var(--color-dark-border)] rounded-xl overflow-hidden flex flex-col">
+          <div className="bg-[var(--color-dark-surface)]/80 px-4 py-2 border-b border-[var(--color-dark-border)] text-xs font-mono text-slate-400 flex items-center justify-between">
             <span>Editor (Python / FastAPI snippets)</span>
             <span>UTF-8</span>
           </div>
           <textarea
             value={code}
             onChange={(e) => setCode(e.target.value)}
-            className="w-full h-96 p-4 bg-slate-950 text-slate-200 font-mono text-xs focus:outline-none resize-none leading-relaxed"
+            className="w-full h-96 p-4 bg-[var(--color-dark-base)] text-slate-200 font-mono text-xs focus:outline-none resize-none leading-relaxed"
             spellCheck="false"
           />
         </div>
 
         {/* Output Console Area */}
-        <div className="bg-slate-950 border border-slate-800 rounded-xl overflow-hidden flex flex-col">
-          <div className="bg-slate-900/80 px-4 py-2 border-b border-slate-800 text-xs font-mono text-slate-400 flex items-center justify-between">
+        <div className="bg-[var(--color-dark-base)] border border-[var(--color-dark-border)] rounded-xl overflow-hidden flex flex-col">
+          <div className="bg-[var(--color-dark-surface)]/80 px-4 py-2 border-b border-[var(--color-dark-border)] text-xs font-mono text-slate-400 flex items-center justify-between">
             <span>Console Output</span>
             <button
               onClick={() => setOutput('')}
@@ -189,7 +189,7 @@ export const CodePlayground: React.FC<CodePlaygroundProps> = ({
               Clear Output
             </button>
           </div>
-          <pre className="w-full h-96 p-4 font-mono text-xs text-amber-300 overflow-y-auto leading-relaxed whitespace-pre-wrap">
+          <pre className="w-full h-96 p-4 font-mono text-xs text-gold overflow-y-auto leading-relaxed whitespace-pre-wrap">
             {output || '// Click "Run Code" to execute securely in your browser using Pyodide (WASM).'}
           </pre>
         </div>

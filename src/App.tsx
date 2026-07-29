@@ -17,13 +17,13 @@ const ProductionMatrixView = lazy(() => import('./components/ProductionMatrixVie
 const AITutorModal = lazy(() => import('./components/AITutorModal').then((module) => ({ default: module.AITutorModal })));
 
 const LoadingPanel = () => (
-  <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 text-xs text-slate-400">
+  <div className="bg-[var(--color-dark-surface)] border border-[var(--color-dark-border)] rounded-2xl p-6 text-xs text-slate-400">
     Loading section...
   </div>
 );
 
 export function App() {
-  const [activeTab, setActiveTab] = useState<string>('handbook');
+  const [activeTab, setActiveTab] = useState<string>('index');
   const [selectedVolumeId, setSelectedVolumeId] = useState<string>(ALL_VOLUMES[0].id);
   const [selectedChapter, setSelectedChapter] = useState<VolumeChapter>(ALL_VOLUMES[0].chapters[0]);
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -112,7 +112,7 @@ export function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans selection:bg-amber-500/30 selection:text-amber-200">
+    <div className="min-h-screen font-sans">
       
       {/* Top Sticky Navigation */}
       <Navbar
@@ -128,15 +128,15 @@ export function App() {
         
         {/* Search Overlay Results */}
         {searchQuery.trim().length > 0 ? (
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+          <div className="bg-[var(--color-dark-surface)] border border-[var(--color-dark-border)] rounded-2xl p-6 space-y-4">
+            <div className="flex items-center justify-between border-b border-[var(--color-dark-border)] pb-3">
               <h2 className="text-base font-bold text-white flex items-center gap-2">
-                <Search className="w-4 h-4 text-amber-400" />
+                <Search className="w-4 h-4 text-gold" />
                 <span>Search Results for "{searchQuery}" ({searchResults.length} matches)</span>
               </h2>
               <button
                 onClick={() => setSearchQuery('')}
-                className="text-xs text-amber-400 hover:underline"
+                className="text-xs text-gold hover:underline"
               >
                 Clear Search
               </button>
@@ -161,9 +161,9 @@ export function App() {
                       }
                       setSearchQuery('');
                     }}
-                    className="p-4 bg-slate-950 hover:bg-slate-950/80 border border-slate-800 hover:border-amber-500/40 rounded-xl cursor-pointer transition space-y-1"
+                    className="p-4 bg-[var(--color-dark-base)] hover:bg-[var(--color-dark-base)]/80 border border-[var(--color-dark-border)] hover:border-gold/40 rounded-xl cursor-pointer transition space-y-1"
                   >
-                    <div className="flex items-center gap-2 text-[10px] font-bold text-amber-400 uppercase tracking-wider">
+                    <div className="flex items-center gap-2 text-[10px] font-bold text-gold uppercase tracking-wider">
                       <span>{res.label}</span>
                       <span>•</span>
                       <span className="text-slate-400">{res.matchType}</span>
@@ -179,10 +179,10 @@ export function App() {
           <>
             {/* Volume Selector Bar (For Handbook Tab) */}
             {activeTab === 'handbook' && (
-              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-lg">
+              <div className="bg-[var(--color-dark-surface)] border border-[var(--color-dark-border)] rounded-2xl p-4 shadow-lg">
                 <div className="flex items-center justify-between mb-3">
-                  <h2 className="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
-                    <BookOpen className="w-4 h-4 text-amber-400" />
+                  <h2 className="text-xs font-bold uppercase tracking-wider text-gold flex items-center gap-1.5">
+                    <BookOpen className="w-4 h-4 text-gold" />
                     <span>Backend Handbook Core Volumes (1 - 6)</span>
                   </h2>
                   <span className="text-xs text-slate-400">Select a volume to inspect C-level internals & architecture</span>
@@ -198,12 +198,12 @@ export function App() {
                       }}
                       className={`p-3 rounded-xl text-left transition border flex flex-col justify-between ${
                         selectedVolumeId === vol.id
-                          ? 'bg-amber-500/20 text-amber-200 border-amber-500/40 font-bold shadow-md shadow-amber-500/10'
-                          : 'bg-slate-950/50 text-slate-300 border-slate-800 hover:bg-slate-800'
+                          ? 'bg-gold/20 text-gold border-gold/40 font-bold shadow-md shadow-gold/10'
+                          : 'bg-[var(--color-dark-base)]/50 text-slate-300 border-[var(--color-dark-border)] hover:bg-slate-800'
                       }`}
                     >
                       <div>
-                        <span className="text-[10px] font-extrabold uppercase text-amber-400 block mb-0.5">Vol {vol.volumeNumber}</span>
+                        <span className="text-[10px] font-extrabold uppercase text-gold block mb-0.5">Vol {vol.volumeNumber}</span>
                         <span className="text-xs line-clamp-2 font-bold leading-tight">{vol.title}</span>
                       </div>
                       <span className="text-[10px] text-slate-400 mt-2 font-mono">{vol.chapters.length} Chapters</span>

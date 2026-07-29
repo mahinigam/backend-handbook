@@ -21,9 +21,9 @@ export const ProductionMatrixView: React.FC = () => {
       {/* Matrix Cards */}
       <div className="space-y-6">
         {productionMatrixData.map((item, idx) => (
-          <div key={idx} className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4 shadow-lg">
+          <div key={idx} className="bg-[var(--color-dark-surface)] border border-[var(--color-dark-border)] rounded-2xl p-6 space-y-4 shadow-lg">
             
-            <div className="border-b border-slate-800 pb-3">
+            <div className="border-b border-[var(--color-dark-border)] pb-3">
               <span className="text-[10px] font-bold uppercase tracking-wider text-sky-400 bg-sky-500/10 px-2.5 py-0.5 rounded border border-sky-500/20">
                 {item.category}
               </span>
@@ -33,36 +33,36 @@ export const ProductionMatrixView: React.FC = () => {
 
             {/* Platform Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
-              <div className="bg-slate-950 p-3.5 rounded-xl border border-slate-800">
+              <div className="bg-[var(--color-dark-base)] p-3.5 rounded-xl border border-[var(--color-dark-border)]">
                 <span className="text-blue-400 font-bold block mb-1">Google Approach</span>
                 <p className="text-slate-300 leading-relaxed">{item.googleApproach}</p>
               </div>
 
-              <div className="bg-slate-950 p-3.5 rounded-xl border border-slate-800">
+              <div className="bg-[var(--color-dark-base)] p-3.5 rounded-xl border border-[var(--color-dark-border)]">
                 <span className="text-slate-200 font-bold block mb-1">Uber Approach</span>
                 <p className="text-slate-300 leading-relaxed">{item.uberApproach}</p>
               </div>
 
-              <div className="bg-slate-950 p-3.5 rounded-xl border border-slate-800">
+              <div className="bg-[var(--color-dark-base)] p-3.5 rounded-xl border border-[var(--color-dark-border)]">
                 <span className="text-rose-400 font-bold block mb-1">Netflix Approach</span>
                 <p className="text-slate-300 leading-relaxed">{item.netflixApproach}</p>
               </div>
 
-              <div className="bg-slate-950 p-3.5 rounded-xl border border-slate-800">
-                <span className="text-indigo-400 font-bold block mb-1">Stripe Approach</span>
+              <div className="bg-[var(--color-dark-base)] p-3.5 rounded-xl border border-[var(--color-dark-border)]">
+                <span className="text-primary font-bold block mb-1">Stripe Approach</span>
                 <p className="text-slate-300 leading-relaxed">{item.stripeApproach}</p>
               </div>
 
-              <div className="bg-slate-950 p-3.5 rounded-xl border border-slate-800">
-                <span className="text-emerald-400 font-bold block mb-1">Startup / Solo Dev Approach</span>
+              <div className="bg-[var(--color-dark-base)] p-3.5 rounded-xl border border-[var(--color-dark-border)]">
+                <span className="text-primary font-bold block mb-1">Startup / Solo Dev Approach</span>
                 <p className="text-slate-300 leading-relaxed">{item.startupApproach}</p>
               </div>
 
-              <div className="bg-amber-950/20 p-3.5 rounded-xl border border-amber-900/40">
-                <span className="text-amber-400 font-bold block mb-1 flex items-center gap-1">
+              <div className="bg-gold/10 p-3.5 rounded-xl border border-gold/20">
+                <span className="text-gold font-bold block mb-1 flex items-center gap-1">
                   <Scale className="w-3.5 h-3.5" /> Key Architectural Tradeoff
                 </span>
-                <p className="text-amber-200 leading-relaxed">{item.keyTradeoff}</p>
+                <p className="text-gold leading-relaxed">{item.keyTradeoff}</p>
               </div>
             </div>
 

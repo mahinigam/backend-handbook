@@ -29,13 +29,13 @@ export const RoadmapView: React.FC = () => {
     <div className="space-y-6">
       
       {/* Header Banner */}
-      <div className="bg-gradient-to-r from-slate-900 via-purple-950 to-slate-900 border border-purple-900/50 rounded-2xl p-6 text-slate-100 shadow-xl">
-        <div className="flex items-center gap-2 text-xs font-bold text-purple-400 uppercase tracking-wider mb-2">
-          <MapPin className="w-4 h-4 text-purple-400" />
+      <div className="bg-gradient-to-r from-slate-900 via-purple-950 to-slate-900 border border-primary/50 rounded-2xl p-6 text-slate-100 shadow-xl">
+        <div className="flex items-center gap-2 text-xs font-bold text-primary uppercase tracking-wider mb-2">
+          <MapPin className="w-4 h-4 text-primary" />
           <span>Volume 9: 8-Month Backend Engineering Roadmap</span>
         </div>
         <h1 className="text-2xl font-extrabold text-white">Week-by-Week Staff Backend Mastery Path</h1>
-        <p className="text-xs text-purple-200 mt-2 max-w-3xl leading-relaxed">
+        <p className="text-xs text-primary mt-2 max-w-3xl leading-relaxed">
           Structured week-by-week goals, daily study milestones, milestone projects, and recommended engineering papers, RFCs, and books.
         </p>
       </div>
@@ -43,18 +43,18 @@ export const RoadmapView: React.FC = () => {
       {/* Roadmap Weeks */}
       <div className="space-y-6">
         {volume9Roadmap.map((week) => (
-          <div key={week.weekNumber} className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4 shadow-lg">
+          <div key={week.weekNumber} className="bg-[var(--color-dark-surface)] border border-[var(--color-dark-border)] rounded-2xl p-6 space-y-4 shadow-lg">
             
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[var(--color-dark-border)] pb-3">
               <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-purple-400 bg-purple-500/10 px-2.5 py-0.5 rounded border border-purple-500/20">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-primary bg-primary/10 px-2.5 py-0.5 rounded border border-primary/20">
                   Week {week.weekNumber} • {week.theme}
                 </span>
                 <h2 className="text-lg font-bold text-white mt-1">{week.title}</h2>
                 <p className="text-xs text-slate-400">{week.volumeReference}</p>
               </div>
 
-              <div className="bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-800 text-xs text-amber-300 font-medium">
+              <div className="bg-[var(--color-dark-base)] px-3 py-1.5 rounded-xl border border-[var(--color-dark-border)] text-xs text-gold font-medium">
                 🏆 Milestone Project: {week.milestoneProject}
               </div>
             </div>
@@ -73,15 +73,15 @@ export const RoadmapView: React.FC = () => {
                       onClick={() => toggleDay(week.weekNumber, g.day)}
                       className={`p-3 rounded-xl border cursor-pointer transition text-xs flex items-start gap-2.5 ${
                         isDone
-                          ? 'bg-emerald-950/30 border-emerald-800/60 text-emerald-200'
-                          : 'bg-slate-950 border-slate-800 hover:border-slate-700 text-slate-300'
+                          ? 'bg-emerald-950/30 border-primary/60 text-primary'
+                          : 'bg-[var(--color-dark-base)] border-[var(--color-dark-border)] hover:border-slate-700 text-slate-300'
                       }`}
                     >
                       <input
                         type="checkbox"
                         checked={isDone}
                         onChange={() => {}}
-                        className="mt-0.5 rounded text-emerald-500 focus:ring-emerald-500"
+                        className="mt-0.5 rounded text-primary focus:ring-primary"
                       />
                       <div>
                         <span className="font-bold block text-white">Day {g.day}: {g.title}</span>
@@ -95,11 +95,11 @@ export const RoadmapView: React.FC = () => {
 
             {/* Recommended Resources */}
             {week.recommendedResources.length > 0 && (
-              <div className="bg-slate-950/60 p-3 rounded-xl border border-slate-800/80 text-xs">
+              <div className="bg-[var(--color-dark-base)]/60 p-3 rounded-xl border border-[var(--color-dark-border)]/80 text-xs">
                 <span className="font-bold text-slate-400 block mb-1">Recommended Papers & Books:</span>
                 <div className="flex flex-wrap gap-2">
                   {week.recommendedResources.map((res, i) => (
-                    <span key={i} className="px-2.5 py-1 bg-slate-900 text-purple-300 rounded-md border border-slate-800 font-medium text-[11px]">
+                    <span key={i} className="px-2.5 py-1 bg-[var(--color-dark-surface)] text-primary rounded-md border border-[var(--color-dark-border)] font-medium text-[11px]">
                       [{res.type}] {res.title} ({res.authorOrSource})
                     </span>
                   ))}

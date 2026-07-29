@@ -126,13 +126,13 @@ export const AITutorModal: React.FC<AITutorModalProps> = ({
   if (!hasApiKey) {
     return (
       <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-        <div className="bg-slate-900 border border-slate-800 w-full max-w-md rounded-2xl flex flex-col shadow-2xl p-6 relative">
+        <div className="bg-[var(--color-dark-surface)] border border-[var(--color-dark-border)] w-full max-w-md rounded-2xl flex flex-col shadow-2xl p-6 relative">
           <button onClick={onClose} className="absolute top-4 right-4 text-slate-400 hover:text-white">
             <X className="w-5 h-5" />
           </button>
           
           <div className="flex items-center gap-3 mb-4">
-            <div className="p-2 rounded-xl bg-gradient-to-tr from-amber-500 to-orange-600 text-white">
+            <div className="p-2 rounded-xl bg-gradient-to-tr from-gold to-orange-600 text-white">
               <Key className="w-6 h-6" />
             </div>
             <h3 className="font-bold text-white text-lg">Gemini API Key Required</h3>
@@ -140,7 +140,7 @@ export const AITutorModal: React.FC<AITutorModalProps> = ({
           
           <p className="text-sm text-slate-400 mb-6">
             To use the Staff AI Engineer feature, please provide your Gemini API key. 
-            This key is stored <strong className="text-amber-400">only in your browser's local storage</strong> and sent securely to our Vercel Serverless API.
+            This key is stored <strong className="text-gold">only in your browser's local storage</strong> and sent securely to our Vercel Serverless API.
           </p>
           
           <form onSubmit={handleSaveApiKey} className="space-y-4">
@@ -150,14 +150,14 @@ export const AITutorModal: React.FC<AITutorModalProps> = ({
                 placeholder="AIzaSy..."
                 value={apiKey}
                 onChange={(e) => setApiKey(e.target.value)}
-                className="w-full px-4 py-3 bg-slate-950 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:border-amber-500"
+                className="w-full px-4 py-3 bg-[var(--color-dark-base)] border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:border-gold"
                 required
               />
             </div>
             <button
               type="submit"
               disabled={fetchingModels}
-              className="w-full py-3 bg-amber-500 hover:bg-amber-600 disabled:opacity-50 text-slate-950 font-bold rounded-xl transition flex items-center justify-center gap-2"
+              className="w-full py-3 bg-gold hover:bg-gold disabled:opacity-50 text-slate-950 font-bold rounded-xl transition flex items-center justify-center gap-2"
             >
               {fetchingModels ? <Loader2 className="w-5 h-5 animate-spin" /> : <span>Save Key & Fetch Models</span>}
             </button>
@@ -229,12 +229,12 @@ export const AITutorModal: React.FC<AITutorModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-slate-900 border border-slate-800 w-full max-w-4xl h-[85vh] rounded-2xl flex flex-col shadow-2xl overflow-hidden relative">
+      <div className="bg-[var(--color-dark-surface)] border border-[var(--color-dark-border)] w-full max-w-4xl h-[85vh] rounded-2xl flex flex-col shadow-2xl overflow-hidden relative">
         
         {/* Header */}
-        <div className="p-4 bg-slate-950 border-b border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="p-4 bg-[var(--color-dark-base)] border-b border-[var(--color-dark-border)] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-gradient-to-tr from-indigo-600 to-purple-600 text-white">
+            <div className="p-2 rounded-xl bg-gradient-to-tr from-primary to-primary text-white">
               <Bot className="w-5 h-5" />
             </div>
             <div>
@@ -246,18 +246,18 @@ export const AITutorModal: React.FC<AITutorModalProps> = ({
           </div>
 
           <div className="flex items-center gap-2 flex-wrap">
-            <div className="flex items-center gap-2 bg-slate-900 border border-slate-800 px-2 py-1 rounded-lg">
+            <div className="flex items-center gap-2 bg-[var(--color-dark-surface)] border border-[var(--color-dark-border)] px-2 py-1 rounded-lg">
               <Settings2 className="w-3.5 h-3.5 text-slate-400" />
               {fetchingModels ? (
-                 <Loader2 className="w-3.5 h-3.5 text-amber-500 animate-spin" />
+                 <Loader2 className="w-3.5 h-3.5 text-gold animate-spin" />
               ) : (
                 <select 
                   value={selectedModel}
                   onChange={handleModelChange}
-                  className="bg-transparent text-xs text-amber-300 font-bold focus:outline-none cursor-pointer max-w-[150px] truncate"
+                  className="bg-transparent text-xs text-gold font-bold focus:outline-none cursor-pointer max-w-[150px] truncate"
                 >
                   {availableModels.map(m => (
-                    <option key={m.id} value={m.id} className="bg-slate-900 text-white">{m.name}</option>
+                    <option key={m.id} value={m.id} className="bg-[var(--color-dark-surface)] text-white">{m.name}</option>
                   ))}
                 </select>
               )}
@@ -284,7 +284,7 @@ export const AITutorModal: React.FC<AITutorModalProps> = ({
         <div className="flex-1 p-4 overflow-y-auto space-y-4 text-xs font-sans">
           {messages.length === 0 && (
             <div className="text-center py-12 space-y-3">
-              <Sparkles className="w-12 h-12 text-amber-500/50 mx-auto" />
+              <Sparkles className="w-12 h-12 text-gold/50 mx-auto" />
               <p className="text-slate-400 text-sm font-medium">
                 Ask anything about {currentContext?.title || 'the handbook'}. The AI has full context of this volume!
               </p>
@@ -313,8 +313,8 @@ export const AITutorModal: React.FC<AITutorModalProps> = ({
               <div
                 className={`max-w-3xl p-4 rounded-2xl leading-relaxed whitespace-pre-wrap ${
                   m.role === 'user'
-                    ? 'bg-indigo-600 text-white font-medium rounded-br-none'
-                    : 'bg-slate-950 border border-slate-800 text-slate-200 rounded-bl-none font-sans text-[13px]'
+                    ? 'bg-primary text-white font-medium rounded-br-none'
+                    : 'bg-[var(--color-dark-base)] border border-[var(--color-dark-border)] text-slate-200 rounded-bl-none font-sans text-[13px]'
                 }`}
               >
                 {m.text}
@@ -323,27 +323,27 @@ export const AITutorModal: React.FC<AITutorModalProps> = ({
           ))}
 
           {loading && (
-            <div className="flex items-center gap-2 text-indigo-400 text-xs font-mono bg-slate-950 p-3 rounded-xl w-fit">
-              <Loader2 className="w-4 h-4 animate-spin text-purple-400" />
+            <div className="flex items-center gap-2 text-primary text-xs font-mono bg-[var(--color-dark-base)] p-3 rounded-xl w-fit">
+              <Loader2 className="w-4 h-4 animate-spin text-primary" />
               <span>Staff AI Engineer is reasoning...</span>
             </div>
           )}
         </div>
 
         {/* Input Bar */}
-        <div className="p-3 bg-slate-950 border-t border-slate-800 flex items-center gap-2">
+        <div className="p-3 bg-[var(--color-dark-base)] border-t border-[var(--color-dark-border)] flex items-center gap-2">
           <input
             type="text"
             placeholder="Ask a deep technical question..."
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSendQuery()}
-            className="flex-1 px-4 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="flex-1 px-4 py-2.5 bg-[var(--color-dark-surface)] border border-[var(--color-dark-border)] rounded-xl text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-primary"
           />
           <button
             onClick={handleSendQuery}
             disabled={loading || !prompt.trim() || !selectedModel}
-            className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white font-bold text-sm rounded-xl shadow flex items-center gap-1.5 transition"
+            className="px-5 py-2.5 bg-primary hover:bg-primary disabled:opacity-50 text-white font-bold text-sm rounded-xl shadow flex items-center gap-1.5 transition"
           >
             <Send className="w-4 h-4" />
             <span>Send</span>
