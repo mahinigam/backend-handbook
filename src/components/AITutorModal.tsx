@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { 
   Bot, 
   X, 
@@ -317,7 +319,53 @@ export const AITutorModal: React.FC<AITutorModalProps> = ({
                     : 'bg-[var(--color-dark-base)] border border-[var(--color-dark-border)] text-slate-200 rounded-bl-none font-sans text-[13px]'
                 }`}
               >
-                {m.text}
+                {m.role === 'user' ? (
+                  m.text
+                ) : (
+                  <ReactMarkdown
+                    remarkPlugins={[remarkGfm]}
+                    components={{
+                      p: ({node, ...props}) => <p className="mb-4 last:mb-0" {...props} />,
+                      h1: ({node, ...props}) => <h1 className="text-xl font-bold text-white mb-4 mt-6" {...props} />,
+                      h2: ({node, ...props}) => <h2 className="text-lg font-bold text-white mb-3 mt-5" {...props} />,
+                      h3: ({node, ...props}) => <h3 className="text-base font-bold text-white mb-2 mt-4" {...props} />,
+                      ul: ({node, ...props}) => <ul className="list-disc pl-5 mb-4 space-y-1" {...props} />,
+                      ol: ({node, ...props}) => <ol className="list-decimal pl-5 mb-4 space-y-1" {...props} />,
+                      li: ({node, ...props}) => <li className="text-slate-300" {...props} />,
+                      strong: ({node, ...props}) => <strong className="font-semibold text-white" {...props} />,
+                      a: ({node, ...props}) => <a className="text-primary hover:underline" {...props} />,
+                      code: ({node, inline, className, children, ...props}: any) => 
+                        inline ? (
+                          <code className="bg-[var(--color-dark-surface)] px-1.5 py-0.5 rounded text-gold font-mono text-[11px]" {...props}>
+                            {children}
+                          </code>
+                        ) : (
+                          <div className="bg-[var(--color-dark-surface)] rounded-lg overflow-hidden mb-4 border border-[var(--color-dark-border)]">
+                            <div className="bg-[var(--color-dark-base)] px-4 py-1.5 border-b border-[var(--color-dark-border)] flex items-center justify-between text-[10px] text-slate-400 font-mono uppercase tracking-wider">
+                              <span>Code</span>
+                            </div>
+                            <pre className="p-4 overflow-x-auto">
+                              <code className="text-slate-300 font-mono text-xs leading-relaxed" {...props}>
+                                {children}
+                              </code>
+                            </pre>
+                          </div>
+                        ),
+                      table: ({node, ...props}) => (
+                        <div className="overflow-x-auto mb-4 border border-[var(--color-dark-border)] rounded-lg shadow-sm shadow-black/20">
+                          <table className="w-full text-left border-collapse min-w-[600px]" {...props} />
+                        </div>
+                      ),
+                      thead: ({node, ...props}) => <thead className="bg-[var(--color-dark-base)]" {...props} />,
+                      th: ({node, ...props}) => <th className="p-3 border-b border-[var(--color-dark-border)] font-bold text-white whitespace-nowrap text-xs uppercase tracking-wider" {...props} />,
+                      td: ({node, ...props}) => <td className="p-3 border-b border-[var(--color-dark-border)]/50 text-slate-300 align-top leading-relaxed" {...props} />,
+                      blockquote: ({node, ...props}) => <blockquote className="border-l-2 border-primary pl-4 italic text-slate-400 mb-4 bg-primary/5 py-2 pr-4 rounded-r-lg" {...props} />,
+                      hr: ({node, ...props}) => <hr className="border-[var(--color-dark-border)] my-6" {...props} />
+                    }}
+                  >
+                    {m.text}
+                  </ReactMarkdown>
+                )}
               </div>
             </div>
           ))}
