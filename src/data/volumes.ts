@@ -46,7 +46,7 @@ function matchesQuery(query: string, values: Array<string | undefined>) {
 export function searchHandbook(query: string) {
   if (!query || query.trim().length === 0) return [];
 
-  const q = query.toLowerCase();
+  const q = query.trim().toLowerCase();
   const results: HandbookSearchResult[] = [];
 
   for (const vol of ALL_VOLUMES) {
@@ -74,7 +74,7 @@ export function searchHandbook(query: string) {
 export async function searchFullHandbook(query: string) {
   if (!query || query.trim().length === 0) return [];
 
-  const q = query.toLowerCase();
+  const q = query.trim().toLowerCase();
   const results = searchHandbook(query);
   const [
     { volume7Projects },
